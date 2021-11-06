@@ -16,8 +16,6 @@ export class Authenticator {
             cookieJar: this.cookieJar
         });
 
-        // TODO remove the cookies of switch and edu id to avoid stale errors
-
         // POST https://wayf.switch.ch/SWITCHaai/WAYF?entityID=https%3A%2F%2Filias.unibe.ch%2Fshibboleth&return=https%3A%2F%2Filias.unibe.ch%2FShibboleth.sso%2FLogin%3FSAMLDS%3D1%26target%3Dhttps%253A%252F%252Filias.unibe.ch%252Fshib_login.php%253Ftarget%253Droot_1
         //      302
         //      location: https://ilias.unibe.ch/Shibboleth.sso/Login?SAMLDS=1&target=https%3A%2F%2Filias.unibe.ch%2Fshib_login.php%3Ftarget%3Droot_1&entityID=https%3A%2F%2Faai.unifr.ch%2Fidp%2Fshibboleth

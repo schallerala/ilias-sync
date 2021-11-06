@@ -24,8 +24,14 @@ export class FileDownloadResource implements ResourceProvider {
     ) {
     }
 
+    getLocalPath(): string {
+        return this.localFilePath;
+    }
+
     async skip(): Promise<boolean> {
+        // TODO path
         if (existsSync(this.localFilePath)) {
+            // TODO path
             const filesize = statSync(this.localFilePath).size;
             if (filesize === 0)
                 return false;
@@ -58,6 +64,7 @@ export class FileDownloadResource implements ResourceProvider {
     async persist(urlProvider: IliasUrlProvider, cookieJar: CookieJar): Promise<void> {
         const downloadLink = resolveLinkProvider(this.downloadLink, urlProvider);
 
+        // TODO path
         await createNecessaryFolders(this.localFilePath);
 
         // TODO
@@ -71,6 +78,7 @@ export class FileDownloadResource implements ResourceProvider {
             got.stream(downloadLink, {
                 cookieJar
             }),
+            // TODO path
             createWriteStream(this.localFilePath)
         );
         console.log(`Saved at ${this.localFilePath}`);

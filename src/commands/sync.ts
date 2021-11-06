@@ -12,6 +12,7 @@ import {flatMap} from '../utils/Array';
 interface SyncOption {
     logResponses: boolean,
     concurrency: number,
+    dryRun: boolean
 }
 
 export const command = 'sync'
@@ -29,11 +30,17 @@ export const builder: CommandBuilder = function syncBuilder (yargs: Argv<SyncOpt
             describe: 'Concurrent files download',
             type: 'number',
             default: 5
+        },
+        dryRun: {
+            alias: ['dry'],
+            describe: 'Check which files to sync',
+            type: 'boolean',
+            default: false
         }
     });
 }
 
-export const handler = async function authHandler ({ logResponses, concurrency }: Arguments<SyncOption>) {
+export const handler = async function authHandler ({ logResponses, concurrency, dryRun }: Arguments<SyncOption>) {
     const logger = logResponses
         ? new FileLogger()
         : new NoopLogger();
@@ -60,13 +67,21 @@ export const handler = async function authHandler ({ logResponses, concurrency }
         });
 
         console.log(`Persisting ${resourcesToPersist.length} elements`);
-        await pMap(resourcesToPersist, async resourceProvider => {
-            await resourceProvider.persist(uniBernUrlProvider, dlCookieJar);
-            await resourceProvider.updateDbState(uniBernUrlProvider);
-        }, {
-            concurrency,
-            stopOnError: false // TODO think about it
-        });
+        if (dryRun) {
+            if (resourcesToPersist.length > 0)
+                console.log(resourcesToPersist.map(resource => resource.getLocalPath()).join(", "));
+            else
+                console.log("Nothing to sync");
+        }
+        else {
+            await pMap(resourcesToPersist, async resourceProvider => {
+                await resourceProvider.persist(uniBernUrlProvider, dlCookieJar);
+                await resourceProvider.updateDbState(uniBernUrlProvider);
+            }, {
+                concurrency,
+                stopOnError: false // TODO think about it
+            });
+        }
     } finally {
         await connection.close();
     }

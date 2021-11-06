@@ -25,6 +25,10 @@ export class CourseDescriptionResource implements ResourceProvider {
         return join(this.coursePath, 'CourseDescription.md');
     }
 
+    getLocalPath(): string {
+        return this.localFilePath;
+    }
+
     async skip(): Promise<boolean> {
         if (existsSync(this.localFilePath)) {
             const filesize = statSync(this.localFilePath).size;
